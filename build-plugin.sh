@@ -12,6 +12,9 @@ read GRUNT
 printf "Initialise new git repo (y/n): "
 read NEWREPO
 
+printf "Run composer (y/n): "
+read COMPOSER
+
 DEFAULT_NAME="WordPress Plugin Template"
 DEFAULT_CLASS=${DEFAULT_NAME// /_}
 DEFAULT_TOKEN=$( tr '[A-Z]' '[a-z]' <<< $DEFAULT_CLASS)
@@ -159,11 +162,16 @@ cp class-$SLUG-admin-api.php class-$SLUG-admin-api.tmp
 sed "s/$DEFAULT_SLUG/$SLUG/g" class-$SLUG-admin-api.tmp > class-$SLUG-admin-api.php
 rm class-$SLUG-admin-api.tmp
 
+cd ../..
 
 if [ "$NEWREPO" == "y" ]; then
 	echo "Initialising new git repo..."
-	cd ../..
 	git init
+fi
+
+if [ "$COMPOSER" == "y" ]; then
+    echo "Initialising composer..."
+    composer install
 fi
 
 echo "Complete!"
