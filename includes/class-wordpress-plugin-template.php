@@ -58,6 +58,15 @@ class WordPress_Plugin_Template {
 	public $_token; //phpcs:ignore
 
 	/**
+	 * The text domain.
+	 *
+	 * @var     string
+	 * @access  public
+	 * @since   1.0.0
+	 */
+	public $_domain; //phpcs:ignore
+
+	/**
 	 * The main plugin file.
 	 *
 	 * @var     string
@@ -108,12 +117,13 @@ class WordPress_Plugin_Template {
 	 * @param string $file File constructor.
 	 * @param string $version Plugin version.
 	 */
-	public function __construct( $file = '', $version = '1.0.0' ) {
-		$this->_version = $version;
-		$this->_token   = 'wordpress_plugin_template';
+	public function __construct( $file = '' ) {
+		$this->_token   = 'wordpress-plugin-template';
 
 		// Load plugin environment variables.
 		$this->file       = $file;
+		$this->_version   = get_plugin_data( $this->file)['Version'];
+		$this->_domain   = get_plugin_data( $this->file)['TextDomain'];
 		$this->dir        = dirname( $this->file );
 		$this->assets_dir = trailingslashit( $this->dir ) . 'assets';
 		$this->assets_url = esc_url( trailingslashit( plugins_url( '/assets/', $this->file ) ) );
@@ -243,7 +253,7 @@ class WordPress_Plugin_Template {
 	 * @since   1.0.0
 	 */
 	public function load_localisation() {
-		load_plugin_textdomain( 'wordpress-plugin-template', false, dirname( plugin_basename( $this->file ) ) . '/lang/' );
+		load_plugin_textdomain(  $this->_token, false, dirname( plugin_basename( $this->file ) ) . '/lang/' );
 	} // End load_localisation ()
 
 	/**
@@ -254,12 +264,11 @@ class WordPress_Plugin_Template {
 	 * @since   1.0.0
 	 */
 	public function load_plugin_textdomain() {
-		$domain = 'wordpress-plugin-template';
 
-		$locale = apply_filters( 'plugin_locale', get_locale(), $domain );
+		$locale = apply_filters( 'plugin_locale', get_locale(), $this->_domain );
 
-		load_textdomain( $domain, WP_LANG_DIR . '/' . $domain . '/' . $domain . '-' . $locale . '.mo' );
-		load_plugin_textdomain( $domain, false, dirname( plugin_basename( $this->file ) ) . '/lang/' );
+		load_textdomain( $this->_domain, WP_LANG_DIR . '/' . $this->_domain . '/' . $this->_domain . '-' . $locale . '.mo' );
+		load_plugin_textdomain( $this->_domain, false, dirname( plugin_basename( $this->file ) ) . '/lang/' );
 	} // End load_plugin_textdomain ()
 
 	/**

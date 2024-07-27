@@ -128,8 +128,8 @@ class WordPress_Plugin_Template_Settings {
 			array(
 				'location'    => 'options', // Possible settings: options, menu, submenu.
 				'parent_slug' => 'options-general.php',
-				'page_title'  => __( 'Plugin Settings', 'wordpress-plugin-template' ),
-				'menu_title'  => __( 'Plugin Settings', 'wordpress-plugin-template' ),
+				'page_title'  => __( 'Plugin Settings', $this->parent->_domain ),
+				'menu_title'  => __( 'Plugin Settings', $this->parent->_domain ),
 				'capability'  => 'manage_options',
 				'menu_slug'   => $this->parent->_token . '_settings',
 				'function'    => array( $this, 'settings_page' ),
@@ -177,7 +177,7 @@ class WordPress_Plugin_Template_Settings {
 	 * @return array        Modified links.
 	 */
 	public function add_settings_link( $links ) {
-		$settings_link = '<a href="options-general.php?page=' . $this->parent->_token . '_settings">' . __( 'Settings', 'wordpress-plugin-template' ) . '</a>';
+		$settings_link = '<a href="options-general.php?page=' . $this->parent->_token . '_settings">' . __( 'Settings', $this->parent->_domain ) . '</a>';
 		array_push( $links, $settings_link );
 		return $links;
 	}
@@ -401,7 +401,7 @@ class WordPress_Plugin_Template_Settings {
 
 		// Build page HTML.
 		$html      = '<div class="wrap" id="' . $this->parent->_token . '_settings">' . "\n";
-			$html .= '<h2>' . __( 'Plugin Settings', 'wordpress-plugin-template' ) . '</h2>' . "\n";
+			$html .= '<h2>' . __( 'Plugin settings', $this->parent->_domain ) . '</h2>' . "\n";
 
 			$tab = '';
 		//phpcs:disable
@@ -455,13 +455,32 @@ class WordPress_Plugin_Template_Settings {
 
 				$html     .= '<p class="submit">' . "\n";
 					$html .= '<input type="hidden" name="tab" value="' . esc_attr( $tab ) . '" />' . "\n";
-					$html .= '<input name="Submit" type="submit" class="button-primary" value="' . esc_attr( __( 'Save Settings', 'wordpress-plugin-template' ) ) . '" />' . "\n";
+					$html .= '<input name="Submit" type="submit" class="button-primary" value="' . esc_attr( __( 'Save Settings', $this->parent->_domain ) ) . '" />' . "\n";
 				$html     .= '</p>' . "\n";
 			$html         .= '</form>' . "\n";
 		$html             .= '</div>' . "\n";
 
 		echo $html; //phpcs:ignore
 	}
+
+
+    public function __get($name) {
+        if(!property_exists($this,$name)) {
+            return $this->get_setting($name);
+        }
+        return $this->{$name};
+    }
+
+    public function get_setting($setting) {
+        foreach($this->settings as $section => $section_data) {
+            foreach($section_data['fields'] as $field) {
+                if($field['id'] == $setting) {
+                    return get_option($this->base.$setting,$field['default']);
+                }
+            }
+        }
+        return get_option($this->base.$setting);
+    }
 
 	/**
 	 * Main WordPress_Plugin_Template_Settings Instance

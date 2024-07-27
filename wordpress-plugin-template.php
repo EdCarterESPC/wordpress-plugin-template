@@ -11,6 +11,8 @@
  *
  * Text Domain: wordpress-plugin-template
  * Domain Path: /lang/
+ * Update URI: https://assets.espc.com/wordpress/wordpress-plugin-template/
+ * Update Domain: assets.espc.com
  *
  * @package WordPress
  * @author Hugh Lashbrooke
@@ -20,6 +22,10 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+require_once 'vendor/autoload.php';
+
+// required to use plugin metadata in version and update checks
+require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
 // Load plugin class files.
 require_once 'includes/class-wordpress-plugin-template.php';
